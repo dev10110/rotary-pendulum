@@ -42,7 +42,7 @@ class Interface:
     async def match_target(self):
         
         if self.stopped:
-            await self.c.set_stop()
+            self.state = await self.c.set_stop(query=True)
             return
     
         if not self.started:
