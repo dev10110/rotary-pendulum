@@ -1,0 +1,15 @@
+package moteus_lcm;
+
+struct motor_state_t {
+    int16_t mode;
+    double position;
+    double velocity;
+    double torque;
+    double q_current;
+    double d_current;
+    double abs_position;
+    double rezero_state;
+    double voltage;
+    double temperature;
+    int8_t fault;
+}

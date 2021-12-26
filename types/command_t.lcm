@@ -1,0 +1,8 @@
+package moteus_lcm;
+
+struct command_t {
+    double pos;
+    double stop_pos;
+    double vel;
+    double max_torque;
+}

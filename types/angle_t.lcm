@@ -1,0 +1,5 @@
+package AS5048A_lcm;
+
+struct angle_t {
+  double angle;
+}
