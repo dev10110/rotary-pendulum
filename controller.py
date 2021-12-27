@@ -32,9 +32,9 @@ class Controller:
 
     def update_target(self):
 
-        k = -1/360.0
+        k = 0.5 / 360.0
 
-        self.target_pos = k * (180 - self.angle)
+        self.target_pos = k * (self.angle)
 
     def loop(self):
         # this is the sequence to run each time
@@ -56,14 +56,14 @@ class Controller:
         
     def run(self):
         while True: 
-            start_time = time.time_ns()
+            #start_time = time.time_ns()
             self.loop()
-            end_time = time.time_ns()
-            time.sleep(max(0.0, self.RATE - 1e-9 * (end_time - start_time)))
+            #end_time = time.time_ns()
+            #time.sleep(max(0.0, self.RATE - 1e-9 * (end_time - start_time)))
 
     def publish_target(self):
         msg = command_t()
-        msg.pos = 0.8*self.current_pos + 0.2*self.target_pos
+        msg.pos = self.target_pos#0.8*self.current_pos + 0.2*self.target_pos
         msg.vel = 5.0
         msg.max_torque = 2.0
         msg.stop_pos = 0.0#self.target_pos

@@ -15,6 +15,8 @@ class Interface:
         self.MAX_ANGLE = 0.25
         self.MIN_ANGLE = -0.25
 
+        self.ZERO_OFFSET = 0.0
+
         # CREATE LCM COMMUNICATION
         self.lc = lcm.LCM()
         self.subs_cmd = self.lc.subscribe("COMMAND", self.command_handler)
@@ -36,7 +38,7 @@ class Interface:
 
     def command_handler(self, channel, data):
         msg = command_t.decode(data)
-        print("Received Command!")
+        #print("Received Command!")
         self.cmd_pos = self.saturate(msg.pos)
         #self.cmd_stop_pos = msg.stop_pos
         #self.cmd_vel = msg.vel
@@ -57,9 +59,11 @@ class Interface:
     
         if not self.started:
             self.state = await self.c.set_stop(query = True)
-            self.cmd_pos = self.state.values[moteus.Register.POSITION];
-            self.last_pos = self.cmd_pos
+            self.ZERO_OFFSET = self.state.values[moteus.Register.POSITION];
+            self.cmd_pos = 0.0
+            self.last_pos = 0.0
             print(f"Grabbed Desired Pos {self.cmd_pos:.3f}")
+        
             self.started = True
             return
         
@@ -70,7 +74,7 @@ class Interface:
                                           maximum_torque=2.0,#self.cmd_max_torque,
                                           query = True,
                                           kp_scale= 0.0)
-        self.last_pos = self.state.values[moteus.Register.POSITION];
+        self.last_pos = self.state.values[moteus.Register.POSITION] - self.ZERO_OFFSET;
 
     def publish_state(self):
         
@@ -83,7 +87,7 @@ class Interface:
 
         msg = motor_state_t()
         msg.mode          = state.values[moteus.Register.MODE]
-        msg.position      = state.values[moteus.Register.POSITION]
+        msg.position      = state.values[moteus.Register.POSITION] - self.ZERO_OFFSET
         msg.velocity      = state.values[moteus.Register.VELOCITY]
         msg.torque        = state.values[moteus.Register.TORQUE]
         #msg.q_current    = state.values[moteus.Register.Q_CURRENT]

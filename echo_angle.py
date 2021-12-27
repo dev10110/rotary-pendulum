@@ -9,7 +9,7 @@ print("STARTING ECHO ANGLE SCRIPT...")
 
 def angle_handler(channel, data):
     msg = angle_t.decode(data)
-    print("ANGLE MSG: %.3f" % msg.angle)
+    print(f"ANGLE MSG: {msg.angle: 3.3f}")
 
 sub = lc.subscribe("ANGLE", angle_handler)
 
