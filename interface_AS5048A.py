@@ -41,8 +41,22 @@ offset = calibrate()
 print("CALIBRATION COMPLETE")
 print("STARTING TO PUBLISH")
 
+
+last_angle = wrap(read() - offset)
+
 while True:
+
     theta = wrap(read() - offset)
+
+    # if theta is more than pi greater than previous value
+    if theta > last_angle + 180:
+        theta = theta - 360
+       
+    # if theta is more than pi less than previous valkue
+    if theta < last_angle - 180:
+        theta = theta + 360    
+        
+    last_angle = theta
 
     #print(theta)
 

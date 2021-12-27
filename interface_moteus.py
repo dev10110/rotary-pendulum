@@ -12,6 +12,9 @@ class Interface:
 
     def __init__(self, motor_id=1):
 
+        self.MAX_ANGLE = 0.25
+        self.MIN_ANGLE = -0.25
+
         # CREATE LCM COMMUNICATION
         self.lc = lcm.LCM()
         self.subs_cmd = self.lc.subscribe("COMMAND", self.command_handler)
@@ -24,10 +27,17 @@ class Interface:
         self.started = False
         self.stopped = False
 
+    def saturate(self, angle):
+        if angle > self.MAX_ANGLE:
+            return self.MAX_ANGLE
+        if angle < self.MIN_ANGLE:
+            return self.MIN_ANGLE
+        return angle
+
     def command_handler(self, channel, data):
         msg = command_t.decode(data)
         print("Received Command!")
-        self.cmd_pos = msg.pos
+        self.cmd_pos = self.saturate(msg.pos)
         #self.cmd_stop_pos = msg.stop_pos
         #self.cmd_vel = msg.vel
         #self.cmd_max_torque = msg.max_torque
@@ -56,7 +66,7 @@ class Interface:
         print(f"LAST POS: {self.last_pos: 3.3f} CMD POS: {self.cmd_pos: 3.3f}")
 
         self.state = await self.c.set_position(position = None,#np.nan,
-                                          velocity = -5.0 * (self.last_pos - self.cmd_pos), #self.cmd_vel,
+                                          velocity = -15.0 * (self.last_pos - self.cmd_pos), #self.cmd_vel,
                                           maximum_torque=2.0,#self.cmd_max_torque,
                                           query = True,
                                           kp_scale= 0.0)
